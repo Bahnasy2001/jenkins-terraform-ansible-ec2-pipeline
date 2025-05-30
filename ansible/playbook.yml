@@ -1,0 +1,58 @@
+---
+- name: Configure EC2 Instance
+  hosts: tag_Name_Jenkins-Terraform-EC2
+  become: yes
+  vars:
+    ansible_user: ec2-user
+  tasks:
+
+    - name: Create ansible user
+      user:
+        name: ansible
+        groups: wheel
+        shell: /bin/bash
+        state: present
+        create_home: yes
+        
+    - name: Allow wheel group sudo without password
+      lineinfile:
+        path: /etc/sudoers
+        state: present
+        regexp: '^%wheel'
+        line: '%wheel ALL=(ALL) NOPASSWD: ALL'
+        validate: '/usr/sbin/visudo -cf %s'
+
+    - name: Create .ssh directory for ansible user
+      file:
+        path: /home/ansible/.ssh
+        state: directory
+        owner: ansible
+        group: ansible
+        mode: '0700'
+
+    - name: Copy authorized_keys from ec2-user to ansible user
+      copy:
+        src: /home/ec2-user/.ssh/authorized_keys
+        dest: /home/ansible/.ssh/authorized_keys
+        owner: ansible
+        group: ansible
+        mode: '0600'
+
+    - name: Install nginx
+      package:
+        name: nginx
+        state: present
+
+    - name: Enable and start nginx
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Open port 80 in firewall (Amazon Linux specific)
+      firewalld:
+        port: 80/tcp
+        permanent: yes
+        state: enabled
+      when: ansible_facts['os_family'] == 'RedHat'
+      ignore_errors: yes

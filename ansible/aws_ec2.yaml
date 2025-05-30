@@ -1,0 +1,7 @@
+plugin: amazon.aws.aws_ec2
+regions:
+  - eu-west-1
+filters:
+  tag:Name: Jenkins-Terraform-EC2
+keyed_groups:
+  - key: tags.Name
