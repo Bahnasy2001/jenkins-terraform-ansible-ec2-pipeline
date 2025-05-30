@@ -1,6 +1,6 @@
 ---
 - name: Configure EC2 Instance
-  hosts: Jenkins-Terraform-EC2
+  hosts: _Jenkins_Terraform_EC2
   become: yes
   vars:
     ansible_user: ec2-user
