@@ -13,6 +13,7 @@ pipeline {
         ]]) {
           sh '''
             echo "$SSH_PUBLIC_KEY" > /tmp/my-jenkins-key.pub
+            aws ec2 import-key-pair --key-name "my-jenkins-key" --public-key-material fileb:///tmp/my-jenkins-key.pub --region eu-central-1 || true
             cd terraform
             terraform init
             terraform apply -auto-approve -var "public_key_path=/tmp/my-jenkins-key.pub"
