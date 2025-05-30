@@ -42,7 +42,7 @@ pipeline {
           sshUserPrivateKey(credentialsId: 'ansible-ssh-key', keyFileVariable: 'ANSIBLE_PRIVATE_KEY')
         ]) {
           sh '''
-            pip3 install --user boto3 botocore
+          pip3 install --user boto3 botocore
             cd ansible
             ansible-inventory -i aws_ec2.yaml --list
             ansible-playbook -i aws_ec2.yaml playbook.yml --private-key $ANSIBLE_PRIVATE_KEY
