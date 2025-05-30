@@ -1,6 +1,6 @@
 ---
 - name: Configure EC2 Instance
-  hosts: tag_Name_Jenkins-Terraform-EC2
+  hosts: Jenkins-Terraform-EC2
   become: yes
   vars:
     ansible_user: ec2-user
@@ -13,7 +13,7 @@
         shell: /bin/bash
         state: present
         create_home: yes
-        
+
     - name: Allow wheel group sudo without password
       lineinfile:
         path: /etc/sudoers
