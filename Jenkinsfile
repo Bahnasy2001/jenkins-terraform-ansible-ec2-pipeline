@@ -1,7 +1,7 @@
 pipeline {
   agent any
   environment {
-    AWS_REGION = 'eu-west-1'
+    AWS_REGION = 'eu-central-1'
     SSH_PUBLIC_KEY = credentials('my-ssh-public-key')
   }
   stages {
@@ -19,6 +19,20 @@ pipeline {
           '''
         }
       }
+    }
+
+    stage('Wait for EC2 Ready') {
+        steps {
+            withCredentials([[ 
+            $class: 'AmazonWebServicesCredentialsBinding', 
+            credentialsId: 'aws-creds' 
+            ]]) {
+            sh '''
+                INSTANCE_ID=$(aws ec2 describe-instances --filters "Name=tag:Name,Values=Jenkins-Terraform-EC2" --query "Reservations[*].Instances[*].InstanceId" --output text)
+                aws ec2 wait instance-status-ok --instance-ids $INSTANCE_ID --region $AWS_REGION
+            '''
+            }
+        }
     }
     stage('Ansible Configure EC2') {
       steps {
