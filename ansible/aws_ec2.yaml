@@ -5,3 +5,4 @@ filters:
   tag:Name: Jenkins-Terraform-EC2
 keyed_groups:
   - key: tags.Name
+    prefix: tag_Name_
